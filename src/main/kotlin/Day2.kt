@@ -39,7 +39,23 @@ class Day2 {
             if (input == null) {
                 throw Exception("Input missing")
             }
-            TODO("Not yet implemented")
+
+            return input
+                .reader()
+                .readLines()
+                .map { it.split(" ") }
+                .map{ it.map { s -> points[s] ?: 0 }}
+                .sumOf {
+                    if (it[1] == 1) {
+                        (it[0] + 1) % 3 + 1
+                    }
+                    else if (it[1] == 2) {
+                        3 + it[0]
+                    }
+                    else {
+                        6 + (it[0] + 3) % 3 + 1
+                    }
+                }
         }
     }
 
