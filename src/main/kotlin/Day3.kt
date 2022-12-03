@@ -26,7 +26,13 @@ class Day3 {
             if (input == null) {
                 throw Exception("Input missing")
             }
-            TODO("Not yet implemented")
+
+            return input
+                .reader()
+                .readLines()
+                .chunked(3)
+                .map { it[0].toSet().intersect(it[1].toSet()).intersect(it[2].toSet()).first() }
+                .sumOf { if (it in 'a'..'z') it.code - 96 else it.code - 38 }
         }
     }
 
