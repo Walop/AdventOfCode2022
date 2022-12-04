@@ -19,7 +19,24 @@ class Day4 {
         }
 
         fun process2(input: InputStream?): Int {
-            TODO("Not yet implemented")
+            if (input == null) {
+                throw Exception("Input missing")
+            }
+
+            return input
+                .bufferedReader()
+                .useLines { ln ->
+                    ln
+                        .flatMap { it.split(',', '-') }
+                        .map { it.toInt() }
+                        .chunked(4)
+                        .count {
+                            (it[0] <= it[2] && it[1] >= it[2]) ||
+                                    (it[0] <= it[3] && it[1] >= it[3]) ||
+                                    (it[2] <= it[0] && it[3] >= it[0]) ||
+                                    (it[2] <= it[1] && it[3] >= it[1])
+                        }
+                }
         }
     }
 
