@@ -1,6 +1,5 @@
 import java.io.InputStream
 import java.util.*
-import kotlin.collections.List
 
 class Day5 {
     companion object {
