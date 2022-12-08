@@ -11,8 +11,8 @@ class TestDay8 {
 
     @Test
     internal fun part2() {
-        val input = this::class.java.classLoader.getResource("input_temp.txt")?.openStream()
+        val input = this::class.java.classLoader.getResource("input_day8.txt")?.openStream()
         val output = Day8.process2(input)
-        assertEquals(0, output)
+        assertEquals(252000, output)
     }
 }
