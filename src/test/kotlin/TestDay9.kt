@@ -13,6 +13,6 @@ class TestDay9 {
     internal fun part2() {
         val input = this::class.java.classLoader.getResource("input_day9.txt")?.openStream()
         val output = Day9.process2(input)
-        assertEquals(0, output)
+        assertEquals(2566, output)
     }
 }
