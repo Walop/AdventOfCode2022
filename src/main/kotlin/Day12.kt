@@ -1,29 +1,33 @@
 import java.io.InputStream
 
-data class HeightMap(val start: Int, val end: Int, val graph: List<List<Boolean>>)
+data class HeightMap(val start: List<Int>, val end: Int, val width: Int, val graph: List<List<Boolean>>)
 
 class Day12 {
     companion object {
-        private fun readMap(input: InputStream?): HeightMap {
+        private fun readMap(input: InputStream?, startTile: Char, endTile: Char): HeightMap {
             if (input == null) {
                 throw Exception("Input missing")
             }
 
-            var start = 0
+            var start = mutableListOf<Int>()
             var end = 0
             var width = 0
 
             val map = input.bufferedReader().readLines().flatMapIndexed { i, row ->
                 width = row.length
                 row.mapIndexed { j, tile ->
+                    if (tile == startTile) {
+                        start.add(i * width + j)
+                    }
+                    if (tile == endTile) {
+                        end = i * width + j
+                    }
                     when (tile) {
                         'S' -> {
-                            start = i * width + j
                             'a'
                         }
 
                         'E' -> {
-                            end = i * width + j
                             'z'
                         }
 
@@ -55,20 +59,15 @@ class Day12 {
                 }
             }
 
-            return HeightMap(start, end, graph)
+            return HeightMap(start, end, width, graph)
         }
 
-
-        fun process(input: InputStream?): Int {
-            val heightMap = readMap(input)
-
-            //heightMap.graph.forEach { println(it) }
-
-            val numOfVertices = heightMap.graph.size
+        private fun findPath(graph: List<List<Boolean>>, width: Int, start: Int, end: Int): Int {
+            val numOfVertices = graph.size
 
             val visitedAndDistance = List(numOfVertices) { mutableListOf(0, Int.MAX_VALUE) }
 
-            visitedAndDistance[heightMap.start][1] = 0
+            visitedAndDistance[start][1] = 0
 
             fun nextToVisit(): Int {
                 var v = -1
@@ -83,12 +82,12 @@ class Day12 {
 
             repeat(numOfVertices) {
                 val toVisit = nextToVisit()
-                for (i in 0 until numOfVertices) {
-                    if (heightMap.graph[toVisit][i] && visitedAndDistance[i][0] == 0) {
+                for (i in listOf(toVisit - 1, toVisit + 1, toVisit + width, toVisit - width)) {
+                    if (i in 0 until numOfVertices && graph[toVisit][i] && visitedAndDistance[i][0] == 0) {
                         val newDistance = visitedAndDistance[toVisit][1] + 1
                         if (visitedAndDistance[i][1] > newDistance) {
                             visitedAndDistance[i][1] = newDistance
-                            if (i == heightMap.end) {
+                            if (i == end) {
                                 return newDistance
                             }
                         }
@@ -100,8 +99,29 @@ class Day12 {
             return -1
         }
 
+        fun process(input: InputStream?): Int {
+            val heightMap = readMap(input, 'S', 'E')
+
+            //heightMap.graph.forEach { println(it) }
+
+            return findPath(heightMap.graph, heightMap.width, heightMap.start[0], heightMap.end)
+        }
+
         fun process2(input: InputStream?): Int {
-            TODO("Not yet implemented")
+            val heightMap = readMap(input, 'a', 'E')
+
+            var i = 0
+
+            val lengths = heightMap.start.parallelStream().map {
+                findPath(heightMap.graph, heightMap.width, it, heightMap.end)
+            }.map {
+                i++
+                println("$i of ${heightMap.start.size} Done: $it")
+                it
+            }
+                .filter { it > 0 }
+
+            return lengths.min(Integer::compare).get()
         }
     }
 
