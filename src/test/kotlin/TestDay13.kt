@@ -14,7 +14,7 @@ class TestDay13 {
         val input = this::class.java.classLoader.getResource("input_day13.txt")?.openStream()
         val output = Day13.process2(input)
         assertEquals(
-            0,
+            23958,
             output
         )
     }

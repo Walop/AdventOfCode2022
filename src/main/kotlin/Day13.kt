@@ -49,25 +49,25 @@ class Day13 {
         private fun compare(left: NumOrArray, right: NumOrArray): Int {
             for (i in 0 until left.array!!.size) {
                 if (i > right.array!!.size - 1) {
-                    println("Right ran out of elements")
+                    //println("Right ran out of elements")
                     return -1
                 } else if (left.array!![i].num != null && right.array!![i].num != null) {
                     if (left.array!![i].num!! > right.array!![i].num!!) {
-                        println("Left bigger")
+                        //println("Left bigger")
                         return -1
                     }
                     if (left.array!![i].num!! < right.array!![i].num!!) {
-                        println("Left smaller")
+                        //println("Left smaller")
                         return 1
                     }
                 } else if (left.array!![i].num != null && right.array!![i].num == null) {
-                    println("Converting left to array")
+                    //println("Converting left to array")
                     val res = compare(NumOrArray(null, mutableListOf(left.array!![i])), right.array!![i])
                     if (res != 0) {
                         return res
                     }
                 } else if (left.array!![i].num == null && right.array!![i].num != null) {
-                    println("Converting right to array")
+                    //println("Converting right to array")
                     val res = compare(left.array!![i], NumOrArray(null, mutableListOf(right.array!![i])))
                     if (res != 0) {
                         return res
@@ -80,10 +80,10 @@ class Day13 {
                 }
             }
             if (left.array!!.size == right.array!!.size) {
-                println("Left and right equal")
+                //println("Left and right equal")
                 return 0
             }
-            println("Left ran out of elements")
+            //println("Left ran out of elements")
             return 1
         }
 
@@ -103,7 +103,34 @@ class Day13 {
         }
 
         fun process2(input: InputStream?): Int {
-            TODO("Not yet implemented")
+            if (input == null) {
+                throw Exception("Input missing")
+            }
+
+            return input.bufferedReader().useLines { lines ->
+                (sequenceOf("[[2]]", "[[6]]") +
+                        lines).filter { it.isNotEmpty() }.map { buildPacket(it) }
+                    .sortedWith { left, right ->
+                        -compare(
+                            left,
+                            right
+                        )
+                    }
+                    .onEachIndexed { i, it -> println("$i: $it") }
+                    .mapIndexedNotNull { i, it ->
+                        val correctArray = it.array?.firstOrNull()?.array?.firstOrNull()?.array
+                        if (it.array?.size != 1) {
+                            null
+                        } else if (it.array?.firstOrNull()?.array?.size != 1) {
+                            null
+                        } else if (correctArray?.size == 1 && correctArray.first().num in listOf(2, 6)) {
+                            i + 1
+                        } else {
+                            null
+                        }
+                    }.fold(1) { acc, i -> acc * i }
+
+            }
         }
     }
 
