@@ -1,4 +1,3 @@
-import java.io.File
 import java.io.InputStream
 import kotlin.math.absoluteValue
 
@@ -40,40 +39,70 @@ class Day15 {
 
             println("$minX-$maxX: ${(minX - maxX).absoluteValue}")
 
-            val map = mutableListOf<Char>()
+            // val map = mutableListOf<Char>()
 
             val sum = (minX..maxX)
                 .toList()
-                //.parallelStream()
+                .parallelStream()
                 .map { x ->
                     val inRange = sensors.any { sensor ->
                         (sensor.pos.x - x).absoluteValue + (sensor.pos.y - rowNum).absoluteValue <= sensor.range
                     }
                     if (!inRange) {
-                        map.add('.')
+                        // map.add('.')
                         0
                     } else {
                         if (filled.contains(Vec2(x, rowNum))) {
-                            map.add('.')
+                            // map.add('.')
                             0
                         } else {
-                            map.add('#')
+                            // map.add('#')
                             1
                         }
                     }
-                }.filter { it != 0 }.count().toLong()
+                }.filter { it != 0 }.count()
 
             // map.add('.')
 
             //println(map.joinToString("").trim('.').count { it == '.' })
 
-            File("C:\\Temp\\map_15.txt").writeText(map.joinToString(""))
+            //File("C:\\Temp\\map_15.txt").writeText(map.joinToString(""))
 
             return sum
         }
 
-        fun process2(input: InputStream?): Int {
-            TODO("Not yet implemented")
+        fun process2(input: InputStream?): Long {
+            val (sensors, filled) = readSensors(input)
+
+            var maxX = sensors.maxOf { it.pos.x }
+
+            var current = Vec2(0, 0)
+
+            var covering: Sensor? = null
+
+            while (true) {
+                covering = sensors.firstOrNull { sensor ->
+                    sensor != covering &&
+                            (sensor.pos.x - current.x).absoluteValue + (sensor.pos.y - current.y).absoluteValue <= sensor.range
+                }
+
+                if (covering == null) {
+                    break
+                }
+
+                val newPos = ((covering.pos.x + covering.range) - (covering.pos.y - current.y).absoluteValue) + 1
+
+                if (newPos < maxX) {
+                    current.x = newPos
+                } else {
+                    current.x = 0
+                    current.y++
+                }
+            }
+
+            // println(current)
+
+            return 4_000_000L * current.x.toLong() + current.y.toLong()
         }
     }
 
